@@ -40,6 +40,12 @@ class TestRedObject(TestCase):
 
 class TestRedBucket(TestCase):
 
+    def setUp(self):
+        self._conn = redis.Redis()
+
+    def tearDown(self):
+        self._conn.delete("people:foobar")
+
     def test_red_bucket(self):
 
         class MockObject(object):
@@ -56,11 +62,12 @@ class TestRedBucket(TestCase):
                 return "INSTANCE!"
 
         obj = MockObject()
-        conn = redis.Redis()
-        bucket = RedBucket("people", conn)
+        bucket = RedBucket("people", self._conn)
+        result = bucket.fetch("foobar", MockObject)
+        self.assertEqual(result, None)
         bucket.save(obj)
-        self.assertEqual(["name"], list(conn.hkeys("people:foobar")))
-        self.assertEqual("foobar", conn.hget("people:foobar", "name"))
+        self.assertEqual(["name"], list(self._conn.hkeys("people:foobar")))
+        self.assertEqual("foobar", self._conn.hget("people:foobar", "name"))
         result = bucket.fetch("foobar", MockObject)
         self.assertNotEqual(None, result)
         self.assertEqual("INSTANCE!", result)

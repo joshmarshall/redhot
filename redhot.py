@@ -17,6 +17,8 @@ class RedBucket(object):
     def fetch(self, key, redcls):
         object_key = self._get_object_key(key)
         object_dict = self._connection.hgetall(object_key)
+        if not object_dict:
+            return None
         return redcls.from_dict(object_dict)
 
 
