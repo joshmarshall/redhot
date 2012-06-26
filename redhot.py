@@ -21,6 +21,13 @@ class RedBucket(object):
             return None
         return redcls.from_dict(object_dict)
 
+    def fetch_all(self, key, redcls):
+        """Designed for globbing, i.e. 'people:*' ."""
+        object_key = self._get_object_key(key)
+        for full_key in self._connection.keys(object_key):
+            object_dict = self._connection.hgetall(full_key)
+            yield redcls.from_dict(object_dict)
+
 
 @interfaces.define
 class _RedObject(object):

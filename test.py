@@ -71,3 +71,7 @@ class TestRedBucket(TestCase):
         result = bucket.fetch("foobar", MockObject)
         self.assertNotEqual(None, result)
         self.assertEqual("INSTANCE!", result)
+
+        results = list(bucket.fetch_all("foo*", MockObject))
+        self.assertEqual(1, len(results))
+        self.assertEqual("INSTANCE!", results[0])
